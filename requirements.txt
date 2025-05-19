@@ -1,0 +1,7 @@
+huggingface-hub==0.29.1
+lm_eval==0.4.7
+tokenizers==0.19.1
+torch==2.5.0
+torchvision==0.20.0
+transformers==4.44.2
+

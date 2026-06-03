@@ -2,25 +2,9 @@
 
 Official implementation for **InfoQuant: Reducing Quantization Information Error via Peak Suppression Orthogonal Transformation**.
 
+Paper: https://arxiv.org/abs/2605.26175
+
 InfoQuant optimizes peak-suppression orthogonal transformation matrices for LLaMA-family models, then evaluates quantized models with optional Learning Activation Clipping (LAC).
-
-## Project Layout
-
-```text
-infoquant/
-  cli/             Command-line entry points
-  config/          CLI arguments and typed config schemas
-  pipelines/       PSOT, LAC, and evaluation orchestration
-  models/          Model loading, patched LLaMA, and norm fusion
-  rotation/        Rotation optimization, application, Hadamard utilities
-  quantization/    Activation, weight, and GPTQ quantization utilities
-  calibration/     Calibration datasets, activation capture, outlier masks
-  optimization/    Stiefel/Cayley optimizer
-  utils/           Runtime, logging, device, memory, checkpoint helpers
-scripts/           Shell wrappers for common experiments
-```
-
-The legacy top-level Python modules have been removed. Use the package entry points under `infoquant.cli` or the scripts in `scripts/`.
 
 ## Environment
 
@@ -48,24 +32,8 @@ Download LLaMA-2 or LLaMA-3 weights locally from Hugging Face before running exp
 
 ## Run PSOT
 
-Use the script:
-
 ```bash
 sh scripts/get_matrix.sh <MODEL_PATH> <BLOCK_NUM> <W_BITS> <A_BITS> <KV_BITS>
-```
-
-Or call the package CLI directly:
-
-```bash
-python3 -m infoquant.cli.optimize_rotation \
-  --input_model <MODEL_PATH> \
-  --num_hidden_layers -1 \
-  --w_bits 4 \
-  --a_bits 4 \
-  --k_bits 4 \
-  --v_bits 4 \
-  --block_diag 2 \
-  --exp_name rotated_matrix
 ```
 
 Typical block settings:
@@ -75,40 +43,11 @@ Typical block settings:
 
 ## Run LAC Evaluation
 
-Use the script:
-
 ```bash
 sh scripts/eval_lac.sh <MODEL_PATH> <ROTATION_PATH> <USE_BF16> <CALI_BS> <W_BITS> <A_BITS> <KV_BITS>
 ```
 
-Or call the package CLI directly:
-
-```bash
-python3 -m infoquant.cli.eval_lac \
-  --input_model <MODEL_PATH> \
-  --rotated_matrix_path <ROTATION_PATH> \
-  --num_hidden_layers -1 \
-  --zero_shot \
-  --w_bits 4 \
-  --a_bits 4 \
-  --k_bits 4 \
-  --v_bits 4 \
-  --lac \
-  --cali_bsz 4 \
-  --exp_name lac
-```
-
 For 70B models, reduce calibration batch size if GPU memory is tight. The original experiments used about 24 GB GPU memory, but CUDA/runtime overhead can vary.
-
-## Static Checks
-
-When model weights or data are unavailable, run syntax-only validation:
-
-```bash
-PYTHONPYCACHEPREFIX=/private/tmp/infoquant_pycache python3 -m compileall -q .
-```
-
-This checks Python syntax without importing model dependencies, downloading datasets, or running GPU workloads.
 
 ## Results
 
@@ -127,4 +66,3 @@ Baseline results for RTN, SmoothQuant, GPTQ, AWQ, QuaRot, SpinQuant, and OSTQuan
 > Xing Hu, Yuan Cheng, Dawei Yang, Zhixuan Chen, Zukang Xu, Jiangyong Yu, XUCHEN, Zhihang Yuan, Zhe Jiang, Sifan Zhou
 > The Thirteenth International Conference on Learning Representations (ICLR), 2025
 > https://openreview.net/forum?id=rAcgDBdKnP
-

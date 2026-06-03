@@ -1,0 +1,2 @@
+"""InfoQuant package."""
+

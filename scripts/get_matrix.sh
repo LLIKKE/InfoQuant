@@ -5,7 +5,7 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-python get_rotation_matrix.py \
+"${PYTHON:-python3}" -m infoquant.cli.optimize_rotation \
 --input_model $1 \
 --model_max_length 2048 \
 --num_hidden_layers -1 \
@@ -30,5 +30,3 @@ python get_rotation_matrix.py \
 --T 2 \
 --log_dir "./" \
 --exp_name "rotated_matrix" \
-
-
